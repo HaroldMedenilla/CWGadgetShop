@@ -93,98 +93,111 @@ public class GadgetShop extends Application {
             logArea
         );
 
-        // Button actions
-        addMobileBtn.setOnAction(e -> {
-            try {
-                Mobile m = new Mobile(
-                    modelField.getText(),
-                    Double.parseDouble(priceField.getText()),
-                    Integer.parseInt(weightField.getText()),
-                    sizeField.getText(),
-                    Integer.parseInt(creditField.getText())
-                );
-                gadgets.add(m);
-                logArea.appendText("Added Mobile: " + m.getModel() + "\n");
-            } catch (Exception ex) {
-                logArea.appendText("Invalid input for Mobile.\n");
-            }
-        });
-
-        addMp3Btn.setOnAction(e -> {
-            try {
-                MP3 mp3 = new MP3(
-                    modelField.getText(),
-                    Double.parseDouble(priceField.getText()),
-                    Integer.parseInt(weightField.getText()),
-                    sizeField.getText(),
-                    Integer.parseInt(memoryField.getText())
-                );
-                gadgets.add(mp3);
-                logArea.appendText("Added MP3: " + mp3.getModel() + "\n");
-            } catch (Exception ex) {
-                logArea.appendText("Invalid input for MP3.\n");
-            }
-        });
-
-        clearBtn.setOnAction(e -> {
-            modelField.clear(); priceField.clear(); weightField.clear();
-            sizeField.clear(); creditField.clear(); memoryField.clear();
-            phoneNumberField.clear(); durationField.clear();
-            downloadSizeField.clear(); displayNumField.clear();
-        });
-
-        displayAllBtn.setOnAction(e -> {
-            if (gadgets.isEmpty()) {
-                logArea.appendText("No gadgets.\n");
-            } else {
-                for (int i = 0; i < gadgets.size(); i++) {
-                    logArea.appendText("--- Gadget " + i + " ---\n");
-                    logArea.appendText(getGadgetDetails(gadgets.get(i)));
-                }
-            }
-        });
-
-        makeCallBtn.setOnAction(e -> {
-            int index = getDisplayNumber();
-            if (index != -1) {
-                Gadget g = gadgets.get(index);
-                if (g instanceof Mobile) {
-                    Mobile m = (Mobile) g;
-                    try {
-                        int duration = Integer.parseInt(durationField.getText());
-                        m.makeCall(phoneNumberField.getText(), duration);
-                        logArea.appendText("Remaining credit: " + m.getCallCredit() + " mins\n");
-                    } catch (NumberFormatException ex) {
-                        logArea.appendText("Duration must be a whole number.\n");
-                    }
-                } else {
-                    logArea.appendText("Gadget " + index + " is not a Mobile.\n");
-                }
-            }
-        });
-
-        downloadBtn.setOnAction(e -> {
-            int index = getDisplayNumber();
-            if (index != -1) {
-                Gadget g = gadgets.get(index);
-                if (g instanceof MP3) {
-                    MP3 mp3 = (MP3) g;
-                    try {
-                        int size = Integer.parseInt(downloadSizeField.getText());
-                        mp3.downloadMusic(size);
-                        logArea.appendText("Memory remaining: " + mp3.getMemory() + " MB\n");
-                    } catch (NumberFormatException ex) {
-                        logArea.appendText("Download size must be a whole number.\n");
-                    }
-                } else {
-                    logArea.appendText("Gadget " + index + " is not an MP3.\n");
-                }
-            }
-        });
+        // Button actions - each calls its own handle method
+        addMobileBtn.setOnAction(e -> handleAddMobile());
+        addMp3Btn.setOnAction(e -> handleAddMP3());
+        clearBtn.setOnAction(e -> handleClear());
+        displayAllBtn.setOnAction(e -> handleDisplayAll());
+        makeCallBtn.setOnAction(e -> handleMakeCall());
+        downloadBtn.setOnAction(e -> handleDownloadMusic());
 
         stage.setScene(new Scene(root, 490, 510));
         stage.setTitle("Gadget Shop");
         stage.show();
+    }
+
+    private void handleAddMobile() {
+        try {
+            Mobile m = new Mobile(
+                modelField.getText(),
+                Double.parseDouble(priceField.getText()),
+                Integer.parseInt(weightField.getText()),
+                sizeField.getText(),
+                Integer.parseInt(creditField.getText())
+            );
+            gadgets.add(m);
+            logArea.appendText("Added Mobile: " + m.getModel() + "\n");
+        } catch (Exception ex) {
+            logArea.appendText("Invalid input for Mobile.\n");
+        }
+    }
+
+    private void handleAddMP3() {
+        try {
+            MP3 mp3 = new MP3(
+                modelField.getText(),
+                Double.parseDouble(priceField.getText()),
+                Integer.parseInt(weightField.getText()),
+                sizeField.getText(),
+                Integer.parseInt(memoryField.getText())
+            );
+            gadgets.add(mp3);
+            logArea.appendText("Added MP3: " + mp3.getModel() + "\n");
+        } catch (Exception ex) {
+            logArea.appendText("Invalid input for MP3.\n");
+        }
+    }
+
+    private void handleClear() {
+        modelField.clear();
+        priceField.clear();
+        weightField.clear();
+        sizeField.clear();
+        creditField.clear();
+        memoryField.clear();
+        phoneNumberField.clear();
+        durationField.clear();
+        downloadSizeField.clear();
+        displayNumField.clear();
+    }
+
+    private void handleDisplayAll() {
+        if (gadgets.isEmpty()) {
+            logArea.appendText("No gadgets.\n");
+        } else {
+            for (int i = 0; i < gadgets.size(); i++) {
+                logArea.appendText("--- Gadget " + i + " ---\n");
+                logArea.appendText(getGadgetDetails(gadgets.get(i)));
+            }
+        }
+    }
+
+    private void handleMakeCall() {
+        int index = getDisplayNumber();
+        if (index != -1) {
+            Gadget g = gadgets.get(index);
+            if (g instanceof Mobile) {
+                Mobile m = (Mobile) g;
+                try {
+                    int duration = Integer.parseInt(durationField.getText());
+                    m.makeCall(phoneNumberField.getText(), duration);
+                    logArea.appendText("Remaining credit: " + m.getCallCredit() + " mins\n");
+                } catch (NumberFormatException ex) {
+                    logArea.appendText("Duration must be a whole number.\n");
+                }
+            } else {
+                logArea.appendText("Gadget " + index + " is not a Mobile.\n");
+            }
+        }
+    }
+
+    private void handleDownloadMusic() {
+        int index = getDisplayNumber();
+        if (index != -1) {
+            Gadget g = gadgets.get(index);
+            if (g instanceof MP3) {
+                MP3 mp3 = (MP3) g;
+                try {
+                    int size = Integer.parseInt(downloadSizeField.getText());
+                    mp3.downloadMusic(size);
+                    logArea.appendText("Memory remaining: " + mp3.getMemory() + " MB\n");
+                } catch (NumberFormatException ex) {
+                    logArea.appendText("Download size must be a whole number.\n");
+                }
+            } else {
+                logArea.appendText("Gadget " + index + " is not an MP3.\n");
+            }
+        }
     }
 
     private int getDisplayNumber() {
